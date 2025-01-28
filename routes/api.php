@@ -26,23 +26,30 @@ Route::post('/password/reset', [PasswordResetController::class, 'resetPassword']
 Route::post('signup', [AuthController::class, 'signup']);
 Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::get('/home-page-images', [HomePageImageController::class, 'index']);
+Route::post('logout', [AuthController::class, 'logout']);
+Route::post('refresh', [AuthController::class, 'refresh']);
 Route::group([
     'middleware' => 'api',
 ], function ($router) {
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
+
     Route::post('me', [AuthController::class, 'me']);
 });
-Route::get('/users/admins', [UserController::class, 'getAdmins']);
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
-
+    Route::get('/messages', [ContactController::class, 'getAllMessages']);
     Route::get('/home-page-images/{id}', [HomePageImageController::class, 'show']);
     Route::post('/home-page-images', [HomePageImageController::class, 'store']);
     Route::put('/home-page-images/{id}', [HomePageImageController::class, 'update']);
     Route::delete('/home-page-images/{id}', [HomePageImageController::class, 'destroy']);
 });
+
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
-    Route::post('/users/{id}/toggle-role', [UserController::class, 'toggleRole']);
+    Route::middleware('auth:api')->group(function () {
+        Route::get('/toggle-role/{id}', [UserController::class, 'toggleRole']);
+        Route::get('/admins', [UserController::class, 'getAdmins']);
+        Route::get('/all-users-if-admin', [UserController::class, 'getAllUsersIfAdmin']);
+        Route::delete('/delete-user/{id}', [UserController::class, 'deleteUser']);
+        Route::post('/ban-user/{id}', [UserController::class, 'banUser']);
+    });
 });
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
