@@ -41,11 +41,11 @@ Route::middleware(['auth:api', 'role:admin'])->group(function () {
     Route::put('/home-page-images/{id}', [HomePageImageController::class, 'update']);
     Route::delete('/home-page-images/{id}', [HomePageImageController::class, 'destroy']);
 });
-
+Route::get('/admins', [UserController::class, 'getAdmins']);
 Route::middleware(['auth:api', 'role:admin'])->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::get('/toggle-role/{id}', [UserController::class, 'toggleRole']);
-        Route::get('/admins', [UserController::class, 'getAdmins']);
+
         Route::get('/all-users-if-admin', [UserController::class, 'getAllUsersIfAdmin']);
         Route::delete('/delete-user/{id}', [UserController::class, 'deleteUser']);
         Route::post('/ban-user/{id}', [UserController::class, 'banUser']);
